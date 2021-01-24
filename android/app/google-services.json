@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1016131625363",
+    "project_id": "logintmdb",
+    "storage_bucket": "logintmdb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1016131625363:android:ccf9cf664d03f350cfc866",
+        "android_client_info": {
+          "package_name": "com.logintmdb"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1016131625363-sqk45jibj72b3mrt9a78anpov3qpt303.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.logintmdb",
+            "certificate_hash": "229c0a9d6e0dfb2888e57035c4ee29aefeb3d229"
+          }
+        },
+        {
+          "client_id": "1016131625363-6gmcienql5v5aetmf0ov9rtjje9mq1lb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA2ADVxEFVSkWJh9Xtlp4ZpasQ1S4v-ZTg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1016131625363-6gmcienql5v5aetmf0ov9rtjje9mq1lb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
