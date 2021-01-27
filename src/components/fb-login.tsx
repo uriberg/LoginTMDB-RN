@@ -1,27 +1,33 @@
 import React from 'react';
 import { Button } from 'react-native';
 import auth from '@react-native-firebase/auth';
-import { LoginManager, AccessToken } from 'react-native-fbsdk';
+import { LoginManager, AccessToken, LoginButton } from 'react-native-fbsdk';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 interface facebookLoginProps {
-  user: any
+  user: any,
+  showProfileImage: () => void
 }
 
 const FacebookLogin = (props: facebookLoginProps) => {
   if (!props.user) {
     return (
-      <Button
-        title="Facebook Sign-In"
-        onPress={() => onFacebookButtonPress().then((result) => console.log(result))}
-      />
+      <Icon.Button
+        name="facebook"
+        backgroundColor="#3b5998"
+        onPress={() => onFacebookButtonPress().then(props.showProfileImage)}>
+          Login with Facebook
+      </Icon.Button>
     );
   };
 
   return (
-    <Button
-      title="Facebook Sign-Out"
-      onPress={() => onFacebookSignOut().then(() => console.log('Signed out with Facebook!'))}
-    />
+    <Icon.Button
+      name="facebook"
+      backgroundColor="#3b5998"
+      onPress={() => onFacebookSignOut().then(() => console.log('Signed out with Facebook!'))}>
+        Facebook Sign-Out
+    </Icon.Button>
   );
 };
 

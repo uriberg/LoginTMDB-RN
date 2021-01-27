@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import { Button, Alert, Text } from 'react-native';
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 import { GoogleSignin, statusCodes} from '@react-native-community/google-signin';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 interface googleLoginProps {
   user: any
@@ -116,17 +117,24 @@ const GoogleLogin = (props: googleLoginProps) => {
 
   if (!props.user) {
     return (
-      <Button
-        title="Google Sign-In"
-        onPress={() => onGoogleButtonPress().then(() => console.log('siged in?'))}
-      />
+      <Icon.Button
+        name="google"
+        backgroundColor="#DD4839"
+        onPress={() => onGoogleButtonPress().then(() => console.log('siged in?'))}>
+        Or with Google
+      </Icon.Button>
     );
   }
 
   return (
-    <Button title="Google Sign-out" onPress={() => onGoogleSignOut().then(() => console.log('sidned out'))}/>
+    <Icon.Button
+        name="google"
+        backgroundColor="#DD4839"
+        onPress={() => onGoogleSignOut().then(() => console.log('sidned out'))}>
+      Google Sign-out
+    </Icon.Button>
   );
-}
+};
 
 
 
