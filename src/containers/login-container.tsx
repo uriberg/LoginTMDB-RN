@@ -1,39 +1,27 @@
-import React, {useState} from 'react';
-import {Text, View, StyleSheet, Dimensions, ScrollView, Animated, Image, Button} from 'react-native';
-import FacebookLogin from "../components/fb-login";
-import {GoogleSignin} from '@react-native-community/google-signin';
-import GoogleLogin from "../components/google-login";
-import auth from "@react-native-firebase/auth";
-import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
-import {NavigationScreenProps} from "react-navigation";
-//import emptyProfile from './assets/images/emptyProfile.png';
-//const emptyProfileUri = Image.resolveAssetSource(emptyProfile).uri;
+import React from 'react';
+import { Text, View, StyleSheet, Dimensions, ScrollView, Image, TouchableOpacity } from 'react-native';
+import FacebookLogin from '../components/fb-login';
+import GoogleLogin from '../components/google-login';
+import auth from '@react-native-firebase/auth';
+import {NavigationScreenProps} from 'react-navigation';
 const emptyProfile = require('../assets/images/emptyProfile.png');
 import {
     GraphRequest,
     GraphRequestManager,
 } from 'react-native-fbsdk';
 
-// import SocialLogIn from '../components/socialLogin';
 interface State {
     orientation: string,
-    animation: Animated.Value,
     user: any,
     initializing: boolean,
     pictureURL: any,
     pictureURLByID: any
 }
 
-interface extendedProps extends NavigationScreenProps {
-
-}
-
 type AllProps = NavigationScreenProps;
 
 let subscriber;
 class LoginContainer extends React.Component<AllProps, State> {
-
 
     constructor(props: AllProps) {
         super(props);
@@ -45,14 +33,11 @@ class LoginContainer extends React.Component<AllProps, State> {
 
         this.state = {
             orientation: isPortrait() ? 'portrait' : 'landscape',
-            animation: new Animated.Value(0),
             user: undefined,
             initializing: true,
             pictureURL: null,
-            pictureURLByID: null
+            pictureURLByID: null,
         };
-
-        this.animateOpacity();
 
         Dimensions.addEventListener('change', () => {
             console.log('orientation move');
@@ -62,34 +47,30 @@ class LoginContainer extends React.Component<AllProps, State> {
             console.log(isPortrait());
         });
 
-        // const subscriber = auth().onAuthStateChanged(this.onAuthStateChanged);
         // return subscriber; // unsubscribe on unmount
         subscriber = auth().onAuthStateChanged(this.onAuthStateChanged);
-        console.log('was called');
         // unsubscribe on unmount
     }
-
-
 
     componentWillUnmount = () => {
         subscriber();
     }
 
-    animateOpacity = () => {
-        Animated.timing(this.state.animation, {
-            toValue: 1,
-            duration: 800,
-            useNativeDriver: true
-        }).start();
+    onAuthStateChanged = (user: any) => {
+        this.setState({user: user});
+        if (this.state.initializing) this.setState({initializing: false});
     };
 
-    onAuthStateChanged = (user: any) => {
-        console.log('this is user');
-
-        this.setState({user: user})
-        console.log(user);
-        console.log(user?.photoURL);
-        if (this.state.initializing) this.setState({initializing: false})
+    logout = () => {
+        try {
+            auth()
+              .signOut()
+              .then(() => {
+                  this.setState({user: null});
+              });
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     onFacebookLoginImage = () => {
@@ -100,10 +81,10 @@ class LoginContainer extends React.Component<AllProps, State> {
                 if (error) {
                     console.log('Error fetching data: ' + JSON.stringify(error));
                 } else {
-                    console.log(JSON.stringify(result, null, 2));
+                    // console.log(JSON.stringify(result, null, 2));
                     this.setState({
                         pictureURL: result?.picture.data.url,
-                        pictureURLByID: `https://graph.facebook.com/${result?.id}/picture`
+                        pictureURLByID: `https://graph.facebook.com/${result?.id}/picture`,
                     });
                 }
             },
@@ -112,54 +93,46 @@ class LoginContainer extends React.Component<AllProps, State> {
     };
 
     render() {
-        const animatedStyles = {
-            opacity: this.state.animation
-        };
-
         const containerBody = this.state.initializing ? null
             :
             <View style={styles.loginContainerPortrait}>
-                <View style={{
-                    marginBottom: "auto",
-                    marginTop: "auto",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    paddingHorizontal: 50
-                }}>
-                    {this.state.user?
-                        <Text style={{fontWeight: "bold", fontSize: 19}}>Welcome {this.state.user.displayName}!</Text>
+                <View style={styles.loginWelcome}>
+                    {this.state.user ?
+                        <Text style={styles.loginWelcomeText}>Welcome {this.state.user.displayName}!</Text>
                         :
-                        <Text style={{fontWeight: "bold", fontSize: 19}}>Welcome Stranger!</Text>
+                        <Text style={styles.loginWelcomeText}>Welcome Stranger!</Text>
                     }
                     {!this.state.user ?
-                        <Image source={emptyProfile} style={{width: 70, height: 70, marginVertical: 20}}/>
+                        <Image source={emptyProfile} style={styles.emptyAvatar}/>
                         :
                         <Image source={{uri: this.state.user.photoURL}}
-                               style={{width: 70, height: 70, marginVertical: 20, borderRadius: 35}}/>
+                               style={styles.profileAvatar}/>
                     }
-                  {/*{this.state.pictureURL && (*/}
-                  {/*    <Image style={{width: 70, height: 70, marginVertical: 20}} source={{uri: this.state.pictureURL}} />*/}
-                  {/*)}*/}
-                  {/*{this.state.pictureURLByID && (*/}
-                  {/*    <Image style={{width: 70, height: 70, marginVertical: 20}} source={{uri: this.state.pictureURLByID}} />*/}
-                  {/*)}*/}
-                    {this.state.user?
-                        <Button
-                            title="Go to movies"
-                            onPress={() => this.props.navigation.navigate('Movies')}
-                        />
+                    {this.state.user ?
+                        <TouchableOpacity style={styles.loginGoToMoviesButton} onPress={() => this.props.navigation.navigate('Movies')}>
+                            <Text style={styles.loginGoToMoviesButtonText}>GO TO MOVIES</Text>
+                        </TouchableOpacity>
                         :
-                        <Text style={{textAlign: "center", width: 150, fontSize: 13}}>Please log in to continue to the
+                        <Text style={styles.loginWelcomeSubHeading}>Please log in to continue to the
                             awesomness</Text>
                     }
                 </View>
 
-                <Animated.View style={[styles.socialLoginWrapper, animatedStyles]}>
-                    <View style={styles.socialButtonWrapper}>
-                        <FacebookLogin user={this.state.user} showProfileImage={this.onFacebookLoginImage}/>
-                        <GoogleLogin user={this.state.user}/>
-                    </View>
-                </Animated.View>
+                {!this.state.user ?
+                  <View style={[styles.socialLoginWrapper]}>
+                      <View style={styles.socialButtonWrapper}>
+                              <FacebookLogin user={this.state.user} showProfileImage={this.onFacebookLoginImage} />
+                              <GoogleLogin user={this.state.user} />
+                      </View>
+
+                  </View> :
+
+
+                  <TouchableOpacity onPress={this.logout} style={styles.logoutButton}>
+                      <Text style={styles.logoutButtonText}>Logout</Text>
+                  </TouchableOpacity>
+
+                }
             </View>;
 
         if (this.state.orientation === 'landscape') {
@@ -184,63 +157,57 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
         justifyContent: 'center',
         // flexDirection: 'row'
-        backgroundColor: "#f8f8ff",
+        backgroundColor: '#f8f8ff',
     },
-    centerAndSpaceText: {
-        textAlign: 'center',
-        paddingVertical: 10,
+    loginWelcome: {
+        marginBottom: 'auto',
+        marginTop: 'auto',
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingHorizontal: 50,
+    },
+    loginWelcomeText: {
+        fontWeight: 'bold', fontSize: 19,
+    },
+    emptyAvatar: {
+        width: 70, height: 70, marginVertical: 20,
+    },
+    profileAvatar: {
+        width: 70, height: 70, marginVertical: 20, borderRadius: 35,
+    },
+    loginGoToMoviesButton: {
+        backgroundColor: 'orange', padding: 10, borderRadius: 10,
+    },
+    loginGoToMoviesButtonText: {
+        textAlign: 'center', color: 'white',
+    },
+    loginWelcomeSubHeading: {
+        textAlign: 'center', width: 150, fontSize: 13,
     },
     socialLoginWrapper: {
-
         paddingVertical: 20,
-        flexDirection: "row",
+        flexDirection: 'row',
         // alignItems: "center",
         // justifyContent: "flex-end"
     },
-    footer: {
-        paddingHorizontal: 5,
-        marginTop: 120,
-        borderRadius: 5,
-        backgroundColor: "#036f79",
+    logoutButton: {
+        backgroundColor: 'blue',
+        justifyContent: 'center',
+        alignSelf: 'center',
+        paddingVertical: 10,
+        paddingHorizontal: 30,
+        borderRadius: 10,
+        marginVertical: 20,
     },
-    footerText: {
-        color: "#bdcddc",
-        fontWeight: "bold",
-        fontSize: 16
+    logoutButtonText: {
+        textAlign: 'center', color: 'white',
     },
     socialButtonWrapper: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         flex: 1,
         alignItems: 'center',
-        // backgroundColor: 'blue'
     },
-    socialAlternativeTextWrapper: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        alignItems: "center",
-        justifyContent: "center",
-        backgroundColor: "#036f79"
-    },
-    socialAlternativeText: {
-        color: "#bdcddc",
-        fontWeight: "bold",
-        fontSize: 16,
-        letterSpacing: 2
-    },
-    line: {
-        backgroundColor: "#96a4b1",
-        height: 2,
-        flex: 1,
-        alignSelf: 'center',
-        marginTop: 5
-    },
-    image: {
-        flex: 1,
-        resizeMode: "cover",
-        justifyContent: "center"
-    }
 });
 
 

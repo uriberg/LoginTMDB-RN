@@ -9,79 +9,41 @@
  */
 
 import React from 'react';
-import {
-    SafeAreaView,
-    StyleSheet,
-    ScrollView,
-    View,
-    Text,
-    StatusBar,
-} from 'react-native';
+import LoginContainer from './src/containers/login-container';
+import MoviesContainer from './src/containers/movies-container';
+import Movie from './src/containers/movie';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { Provider } from 'react-redux';
+import { applyMiddleware, combineReducers, createStore } from 'redux';
+import thunk from 'redux-thunk';
+import loginReducer from './src/store/reducers/login';
+import moviesReducer from './src/store/reducers/movies';
 
-import {
-    Header,
-    LearnMoreLinks,
-    Colors,
-    DebugInstructions,
-    ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-import LoginContainer from "./src/containers/login-container";
-import MoviesContainer from "./src/containers/movies-container";
-import {NavigationContainer} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
+
+const rootReducer = combineReducers({
+  movies: moviesReducer,
+  login: loginReducer,
+});
+
+export const store = createStore(rootReducer, applyMiddleware(thunk));
 
 declare const global: { HermesInternal: null | {} };
 
 const Stack = createStackNavigator();
 
 const App = () => {
-    return (
-        <NavigationContainer>
-            <Stack.Navigator>
-                <Stack.Screen name="Home" component={LoginContainer}/>
-                <Stack.Screen name="Movies" component={MoviesContainer}/>
-            </Stack.Navigator>
-        </NavigationContainer>
-    );
+  return (
+    <Provider store={store}>
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen name="Home" component={LoginContainer} />
+          <Stack.Screen name="Movies" component={MoviesContainer} />
+          <Stack.Screen name="Movie" component={Movie} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </Provider>
+  );
 };
-
-const styles = StyleSheet.create({
-    scrollView: {
-        backgroundColor: Colors.lighter,
-    },
-    engine: {
-        position: 'absolute',
-        right: 0,
-    },
-    body: {
-        backgroundColor: Colors.white,
-    },
-    sectionContainer: {
-        marginTop: 32,
-        paddingHorizontal: 24,
-    },
-    sectionTitle: {
-        fontSize: 24,
-        fontWeight: '600',
-        color: Colors.black,
-    },
-    sectionDescription: {
-        marginTop: 8,
-        fontSize: 18,
-        fontWeight: '400',
-        color: Colors.dark,
-    },
-    highlight: {
-        fontWeight: '700',
-    },
-    footer: {
-        color: Colors.dark,
-        fontSize: 12,
-        fontWeight: '600',
-        padding: 4,
-        paddingRight: 12,
-        textAlign: 'right',
-    },
-});
 
 export default App;
