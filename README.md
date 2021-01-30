@@ -1,7 +1,7 @@
 # LoginTMDB-RN
 Login app with React Native and the TMDB API(android only, no IOS support)
 
-#Instructions
+# Instructions
 *clone the repository
 
 *install dependencies(using npm install)
@@ -10,7 +10,7 @@ Login app with React Native and the TMDB API(android only, no IOS support)
 
 *run the app --> npm run android
 
-#The app in a nutshell
+# The app in a nutshell
 *first screen is Login screen --> connect using facebook or google
 
 *move to the next screen using the 'GO TO MOVIES' button or logout
