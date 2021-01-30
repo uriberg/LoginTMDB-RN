@@ -81,7 +81,7 @@ class Movie extends React.Component<AllProps, State> {
 
 
         <TouchableOpacity
-          onPress={() => this.props.onAddToWishlist(this.props.route.params.title, this.props.route.params.id)}>
+          onPress={() => this.props.onAddToWishlist(this.props.route.params.title, this.props.route.params.id)} style={styles.centerButton}>
           <View style={styles.button}>
             <Text style={styles.buttonText}>Add to wishlist</Text>
           </View>
@@ -161,6 +161,9 @@ const styles = StyleSheet.create({
   },
   movieTitle: {
     maxWidth: 250,
+  },
+  centerButton: {
+    alignSelf: "center",
   },
   movieDescription: {
     paddingHorizontal: 20,
