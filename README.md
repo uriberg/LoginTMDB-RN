@@ -5,6 +5,7 @@ Login app with React Native and the TMDB API(android only, no IOS support)
 *clone the repository
 
 *install dependencies(using npm install)
+
 *build the app using android studio on virtual or physical device
 *run the app --> npm run android
 
