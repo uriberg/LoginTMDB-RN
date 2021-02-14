@@ -1,8 +1,10 @@
 import React from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet, Modal, ScrollView } from "react-native";
 // import { NavigationScreenProps } from "react-navigation";
-import * as actions from "../store/actions";
-import { connect } from "react-redux";
+import {observer, inject} from 'mobx-react'
+
+// import * as actions from "../store/actions";
+// import { connect } from "react-redux";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { LogBox } from "react-native";
 
@@ -45,7 +47,7 @@ class Movie extends React.Component {
   };
 
   deleteItemFromWishlist = (id) => {
-    this.props.onDeleteFromWishlist(id);
+    this.props.store.deleteFromWishlist(id);
   };
 
 
@@ -59,7 +61,7 @@ class Movie extends React.Component {
             size={30}
             backgroundColor="transparent"
             color="red">
-            <Text style={styles.favoriteNumberText}>{this.props.wishlist.length}</Text>
+            <Text style={styles.favoriteNumberText}>{this.props.store.wishlist.length}</Text>
           </Icon.Button>
         </TouchableOpacity>
         <ScrollView>
@@ -81,7 +83,7 @@ class Movie extends React.Component {
 
 
         <TouchableOpacity
-          onPress={() => this.props.onAddToWishlist(this.props.route.params.title, this.props.route.params.id)} style={styles.centerButton}>
+          onPress={() => this.props.store.addToWishlist(this.props.route.params.title, this.props.route.params.id)} style={styles.centerButton}>
           <View style={styles.button}>
             <Text style={styles.buttonText}>Add to wishlist</Text>
           </View>
@@ -94,7 +96,7 @@ class Movie extends React.Component {
                 <Text>My Wishlist</Text>
               </Icon.Button>
               <View>
-                {this.props.wishlist.map((item) =>
+                {this.props.store.wishlist.map((item) =>
                   <View key={item.id} style={styles.wishlistItemWrapper}>
                     <View style={styles.wishlistItemContent}
                           key={item.id}>
@@ -115,20 +117,20 @@ class Movie extends React.Component {
   }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    wishlist: state.movies.wishlist,
-  };
-};
+// const mapStateToProps = (state) => {
+//   return {
+//     wishlist: state.movies.wishlist,
+//   };
+// };
+//
+// const mapDispatchToProps = (dispatch) => {
+//   return {
+//     onAddToWishlist: (title, id) => dispatch(actions.addToWishlist(title, id)),
+//     onDeleteFromWishlist: (id) => dispatch(actions.deleteFromWishlist(id)),
+//   };
+// };
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    onAddToWishlist: (title, id) => dispatch(actions.addToWishlist(title, id)),
-    onDeleteFromWishlist: (id) => dispatch(actions.deleteFromWishlist(id)),
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Movie);
+export default inject("store")(observer(Movie));
 
 const styles = StyleSheet.create({
   movieContainer: {

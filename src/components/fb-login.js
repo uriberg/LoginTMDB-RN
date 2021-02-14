@@ -3,11 +3,11 @@ import auth from '@react-native-firebase/auth';
 import { LoginManager, AccessToken} from 'react-native-fbsdk';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-interface facebookLoginProps {
-  showProfileImage: () => void
-}
+// interface facebookLoginProps {
+//   showProfileImage: () => void
+// }
 
-const FacebookLogin = (props: facebookLoginProps) => {
+const FacebookLogin = (props) => {
 
     return (
       <Icon.Button

@@ -1,11 +1,12 @@
 import React from 'react';
-import {connect} from 'react-redux';
-import * as actions from '../store/actions/index';
+// import {connect} from 'react-redux';
+// import * as actions from '../store/actions/index';
 import axiosInstance from '../axios';
 import {Text, View, StyleSheet, Dimensions, FlatList, TouchableHighlight} from 'react-native';
 // import {NavigationScreenProps} from 'react-navigation';
 // @ts-ignore
 import {TMDB_API_KEY} from '@env';
+import { inject, observer } from "mobx-react";
 
 // interface PropsFromDispatch {
 //   onSetPopularMovies: () => void,
@@ -40,13 +41,13 @@ class MoviesContainer extends React.Component {
         // console.log(TMDB_API_KEY);
         axiosInstance().get('/3/movie/popular?api_key=' + TMDB_API_KEY + '&language=en-US&page=1')
           .then(result => {
-              this.props.onSetPopularMovies(result.data.results);
+              this.props.store.setPopularMovies(result.data.results);
           })
           .catch(error => console.log(error));
     }
 
     addToWishlist = (movieTitle) => {
-      this.props.onAddToWishlist(movieTitle);
+      this.props.store.addToWishlist(movieTitle);
     };
 
     renderSeparator = () => {
@@ -83,7 +84,7 @@ class MoviesContainer extends React.Component {
         return (
           <View style={styles.listContainer}>
               <FlatList
-                data={this.props.popularMovies}
+                data={this.props.store.popularMovies}
                 renderItem={this.renderItem}
                 keyExtractor={item => item.id.toString()}
                 ItemSeparatorComponent={this.renderSeparator}
@@ -96,21 +97,21 @@ class MoviesContainer extends React.Component {
     }
 }
 
-const mapStateToProps = (state) => {
-  return {
-    popularMovies: state.movies.popularMovies,
-    wishlist: state.movies.wishlist,
-  };
-};
+// const mapStateToProps = (state) => {
+//   return {
+//     popularMovies: state.movies.popularMovies,
+//     wishlist: state.movies.wishlist,
+//   };
+// };
+//
+// const mapDispatchToProps = (dispatch) => {
+//   return {
+//     onSetPopularMovies: (popularList) => dispatch(actions.setPopularMovies(popularList)),
+//     onAddToWishlist: (title) => dispatch(actions.addToWishlist(title)),
+//   };
+// };
 
-const mapDispatchToProps = (dispatch) => {
-  return {
-    onSetPopularMovies: (popularList) => dispatch(actions.setPopularMovies(popularList)),
-    onAddToWishlist: (title) => dispatch(actions.addToWishlist(title)),
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(MoviesContainer);
+export default inject("store")(observer(MoviesContainer));
 
 const styles = StyleSheet.create({
     listContainer: {

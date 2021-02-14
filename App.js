@@ -14,19 +14,20 @@ import MoviesContainer from './src/containers/movies-container';
 import Movie from './src/containers/movie';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { Provider } from 'react-redux';
-import { applyMiddleware, combineReducers, createStore } from 'redux';
-import thunk from 'redux-thunk';
-import loginReducer from './src/store/reducers/login';
-import moviesReducer from './src/store/reducers/movies';
+import { Provider } from 'mobx-react';
+// import { applyMiddleware, combineReducers, createStore } from 'redux';
+// import thunk from 'redux-thunk';
+// import loginReducer from './src/store/reducers/login';
+// import moviesReducer from './src/store/reducers/movies';
+import MoviesStore from "./src/store/movies-store";
 
 
-const rootReducer = combineReducers({
-  movies: moviesReducer,
-  login: loginReducer,
-});
-
-export const store = createStore(rootReducer, applyMiddleware(thunk));
+// const rootReducer = combineReducers({
+//   movies: moviesReducer,
+//   login: loginReducer,
+// });
+//
+// export const store = createStore(rootReducer, applyMiddleware(thunk));
 
 // declare const global: { HermesInternal: null | {} };
 
@@ -34,7 +35,7 @@ const Stack = createStackNavigator();
 
 const App = () => {
   return (
-    <Provider store={store}>
+    <Provider store={MoviesStore}>
       <NavigationContainer>
         <Stack.Navigator>
           <Stack.Screen name="Home" component={LoginContainer} />
