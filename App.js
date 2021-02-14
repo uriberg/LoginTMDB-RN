@@ -28,7 +28,7 @@ const rootReducer = combineReducers({
 
 export const store = createStore(rootReducer, applyMiddleware(thunk));
 
-declare const global: { HermesInternal: null | {} };
+// declare const global: { HermesInternal: null | {} };
 
 const Stack = createStackNavigator();
 

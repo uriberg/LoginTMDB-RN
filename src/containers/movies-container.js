@@ -3,21 +3,21 @@ import {connect} from 'react-redux';
 import * as actions from '../store/actions/index';
 import axiosInstance from '../axios';
 import {Text, View, StyleSheet, Dimensions, FlatList, TouchableHighlight} from 'react-native';
-import {NavigationScreenProps} from 'react-navigation';
+// import {NavigationScreenProps} from 'react-navigation';
 // @ts-ignore
 import {TMDB_API_KEY} from '@env';
 
-interface PropsFromDispatch {
-  onSetPopularMovies: () => void,
-  onAddToWishlist: (title: string) => void
-}
+// interface PropsFromDispatch {
+//   onSetPopularMovies: () => void,
+//   onAddToWishlist: (title: string) => void
+// }
+//
+// interface PropsFromState {
+//   popularMovies: [],
+//   wishlist: []
+// }
 
-interface PropsFromState {
-  popularMovies: [],
-  wishlist: []
-}
-
-type AllProps = NavigationScreenProps & PropsFromDispatch & PropsFromState;
+// type AllProps = NavigationScreenProps & PropsFromDispatch & PropsFromState;
 
 const Item = ({title}) => (
   <View style={styles.itemText}>
@@ -25,9 +25,9 @@ const Item = ({title}) => (
   </View>
 );
 
-class MoviesContainer extends React.Component<AllProps> {
+class MoviesContainer extends React.Component {
 
-    constructor(props: AllProps) {
+    constructor(props) {
         super(props);
 
         const isPortrait = () => {
@@ -37,6 +37,7 @@ class MoviesContainer extends React.Component<AllProps> {
     }
 
     componentDidMount() {
+        // console.log(TMDB_API_KEY);
         axiosInstance().get('/3/movie/popular?api_key=' + TMDB_API_KEY + '&language=en-US&page=1')
           .then(result => {
               this.props.onSetPopularMovies(result.data.results);
@@ -44,7 +45,7 @@ class MoviesContainer extends React.Component<AllProps> {
           .catch(error => console.log(error));
     }
 
-    addToWishlist = (movieTitle: string) => {
+    addToWishlist = (movieTitle) => {
       this.props.onAddToWishlist(movieTitle);
     };
 
@@ -95,17 +96,17 @@ class MoviesContainer extends React.Component<AllProps> {
     }
 }
 
-const mapStateToProps = (state: any) => {
+const mapStateToProps = (state) => {
   return {
     popularMovies: state.movies.popularMovies,
     wishlist: state.movies.wishlist,
   };
 };
 
-const mapDispatchToProps = (dispatch: any) => {
+const mapDispatchToProps = (dispatch) => {
   return {
-    onSetPopularMovies: (popularList: []) => dispatch(actions.setPopularMovies(popularList)),
-    onAddToWishlist: (title: string) => dispatch(actions.addToWishlist(title)),
+    onSetPopularMovies: (popularList) => dispatch(actions.setPopularMovies(popularList)),
+    onAddToWishlist: (title) => dispatch(actions.addToWishlist(title)),
   };
 };
 

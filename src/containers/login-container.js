@@ -3,27 +3,27 @@ import { Text, View, StyleSheet, Dimensions, ScrollView, Image, TouchableOpacity
 import FacebookLogin from '../components/fb-login';
 import GoogleLogin from '../components/google-login';
 import auth from '@react-native-firebase/auth';
-import {NavigationScreenProps} from 'react-navigation';
+// import {NavigationScreenProps} from 'react-navigation';
 const emptyProfile = require('../assets/images/emptyProfile.png');
 import {
     GraphRequest,
     GraphRequestManager,
 } from 'react-native-fbsdk';
 
-interface State {
-    orientation: string,
-    user: any,
-    initializing: boolean,
-    pictureURL: any,
-    pictureURLByID: any
-}
+// interface State {
+//     orientation: string,
+//     user: any,
+//     initializing: boolean,
+//     pictureURL: any,
+//     pictureURLByID: any
+// }
 
-type AllProps = NavigationScreenProps;
+// type AllProps = NavigationScreenProps;
 
 let subscriber;
-class LoginContainer extends React.Component<AllProps, State> {
+class LoginContainer extends React.Component {
 
-    constructor(props: AllProps) {
+    constructor(props) {
         super(props);
 
         const isPortrait = () => {
@@ -56,7 +56,7 @@ class LoginContainer extends React.Component<AllProps, State> {
         subscriber();
     }
 
-    onAuthStateChanged = (user: any) => {
+    onAuthStateChanged = (user) => {
         this.setState({user: user});
         if (this.state.initializing) this.setState({initializing: false});
     };

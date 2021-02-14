@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet, Modal, ScrollView } from "react-native";
-import { NavigationScreenProps } from "react-navigation";
+// import { NavigationScreenProps } from "react-navigation";
 import * as actions from "../store/actions";
 import { connect } from "react-redux";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -10,28 +10,28 @@ LogBox.ignoreLogs([
   "Non-serializable values were found in the navigation state"
 ]);
 
-interface MovieProps extends NavigationScreenProps {
-  route: NavigationScreenProps
-}
+// interface MovieProps extends NavigationScreenProps {
+//   route: NavigationScreenProps
+// }
+//
+// interface PropsFromDispatch {
+//   onAddToWishlist: (title: string, id: number) => void,
+//   onDeleteFromWishlist: (id: number) => void
+// }
+//
+// interface PropsFromState {
+//   wishlist: []
+// }
+//
+// interface State {
+//   showModal: boolean
+// }
 
-interface PropsFromDispatch {
-  onAddToWishlist: (title: string, id: number) => void,
-  onDeleteFromWishlist: (id: number) => void
-}
+// type AllProps = MovieProps & PropsFromDispatch & PropsFromState;
 
-interface PropsFromState {
-  wishlist: []
-}
+class Movie extends React.Component {
 
-interface State {
-  showModal: boolean
-}
-
-type AllProps = MovieProps & PropsFromDispatch & PropsFromState;
-
-class Movie extends React.Component<AllProps, State> {
-
-  constructor(props: AllProps) {
+  constructor(props) {
     super(props);
     this.state = { showModal: false };
   }
@@ -44,7 +44,7 @@ class Movie extends React.Component<AllProps, State> {
     this.setState({ showModal: false });
   };
 
-  deleteItemFromWishlist = (id: number) => {
+  deleteItemFromWishlist = (id) => {
     this.props.onDeleteFromWishlist(id);
   };
 
@@ -94,7 +94,7 @@ class Movie extends React.Component<AllProps, State> {
                 <Text>My Wishlist</Text>
               </Icon.Button>
               <View>
-                {this.props.wishlist.map((item: any) =>
+                {this.props.wishlist.map((item) =>
                   <View key={item.id} style={styles.wishlistItemWrapper}>
                     <View style={styles.wishlistItemContent}
                           key={item.id}>
@@ -115,16 +115,16 @@ class Movie extends React.Component<AllProps, State> {
   }
 }
 
-const mapStateToProps = (state: any) => {
+const mapStateToProps = (state) => {
   return {
     wishlist: state.movies.wishlist,
   };
 };
 
-const mapDispatchToProps = (dispatch: any) => {
+const mapDispatchToProps = (dispatch) => {
   return {
-    onAddToWishlist: (title: string, id: number) => dispatch(actions.addToWishlist(title, id)),
-    onDeleteFromWishlist: (id: number) => dispatch(actions.deleteFromWishlist(id)),
+    onAddToWishlist: (title, id) => dispatch(actions.addToWishlist(title, id)),
+    onDeleteFromWishlist: (id) => dispatch(actions.deleteFromWishlist(id)),
   };
 };
 
