@@ -15,21 +15,7 @@ import Movie from './src/containers/movie';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Provider } from 'mobx-react';
-// import { applyMiddleware, combineReducers, createStore } from 'redux';
-// import thunk from 'redux-thunk';
-// import loginReducer from './src/store/reducers/login';
-// import moviesReducer from './src/store/reducers/movies';
 import MoviesStore from "./src/store/movies-store";
-
-
-// const rootReducer = combineReducers({
-//   movies: moviesReducer,
-//   login: loginReducer,
-// });
-//
-// export const store = createStore(rootReducer, applyMiddleware(thunk));
-
-// declare const global: { HermesInternal: null | {} };
 
 const Stack = createStackNavigator();
 

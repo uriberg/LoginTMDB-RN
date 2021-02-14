@@ -3,22 +3,12 @@ import {Text, View, StyleSheet, Dimensions, ScrollView, Image, TouchableOpacity,
 import FacebookLogin from '../components/fb-login';
 import GoogleLogin from '../components/google-login';
 import auth from '@react-native-firebase/auth';
-// import {NavigationScreenProps} from 'react-navigation';
 const emptyProfile = require('../assets/images/emptyProfile.png');
 import {
     GraphRequest,
     GraphRequestManager,
 } from 'react-native-fbsdk';
 
-// interface State {
-//     orientation: string,
-//     user: any,
-//     initializing: boolean,
-//     pictureURL: any,
-//     pictureURLByID: any
-// }
-
-// type AllProps = NavigationScreenProps;
 
 const createAnimationStyle = animation => {
     const translateY = animation.interpolate({
@@ -156,10 +146,10 @@ class LoginContainer extends React.Component {
             this.animateLogout();
             this.animateLoggedIn();
         } else {
-            this.state.logout.setValue(0),
-            this.state.welcomeUser.setValue(0),
-            this.state.socialProfileImage.setValue(0),
-            this.state.goToMovies.setValue(0),
+            this.state.logout.setValue(0);
+            this.state.welcomeUser.setValue(0);
+            this.state.socialProfileImage.setValue(0);
+            this.state.goToMovies.setValue(0);
             this.animateOpacity();
             this.animateStagger();
         }
@@ -317,8 +307,6 @@ const styles = StyleSheet.create({
     socialLoginWrapper: {
         paddingVertical: 20,
         flexDirection: 'row',
-        // alignItems: "center",
-        // justifyContent: "flex-end"
     },
     logoutButton: {
         backgroundColor: 'blue',

@@ -1,10 +1,6 @@
 import React from "react";
 import { View, Text, Image, TouchableOpacity, StyleSheet, Modal, ScrollView, Animated} from "react-native";
-// import { NavigationScreenProps } from "react-navigation";
 import {observer, inject} from 'mobx-react'
-
-// import * as actions from "../store/actions";
-// import { connect } from "react-redux";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { LogBox } from "react-native";
 import WishlistItem from "../components/wishlistItem";
@@ -13,24 +9,7 @@ LogBox.ignoreLogs([
   "Non-serializable values were found in the navigation state"
 ]);
 
-// interface MovieProps extends NavigationScreenProps {
-//   route: NavigationScreenProps
-// }
-//
-// interface PropsFromDispatch {
-//   onAddToWishlist: (title: string, id: number) => void,
-//   onDeleteFromWishlist: (id: number) => void
-// }
-//
-// interface PropsFromState {
-//   wishlist: []
-// }
-//
-// interface State {
-//   showModal: boolean
-// }
 
-// type AllProps = MovieProps & PropsFromDispatch & PropsFromState;
 const createAnimationStyle = animation => {
   const translateY = animation.interpolate({
     inputRange: [0, 1],
@@ -59,8 +38,6 @@ class Movie extends React.Component {
       headline: new Animated.Value(0),
       poster: new Animated.Value(0),
       description: new Animated.Value(0),
-      wishlistItem: new Animated.Value(1),
-      activeItem: -1
     };
 
     this.animateOpacity();
@@ -111,10 +88,6 @@ class Movie extends React.Component {
   render() {
     const animatedStyles = {
       opacity: this.state.animation
-    };
-
-    const animatedWishlistItemStyle = {
-      opacity: this.state.wishlistItem
     };
 
     const headlineStyle = createAnimationStyle(this.state.headline);
@@ -180,19 +153,6 @@ class Movie extends React.Component {
   }
 }
 
-// const mapStateToProps = (state) => {
-//   return {
-//     wishlist: state.movies.wishlist,
-//   };
-// };
-//
-// const mapDispatchToProps = (dispatch) => {
-//   return {
-//     onAddToWishlist: (title, id) => dispatch(actions.addToWishlist(title, id)),
-//     onDeleteFromWishlist: (id) => dispatch(actions.deleteFromWishlist(id)),
-//   };
-// };
-
 export default inject("store")(observer(Movie));
 
 const styles = StyleSheet.create({
@@ -244,18 +204,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     flexDirection: 'row-reverse',
     justifyContent: 'space-between',
-  },
-  wishlistItemWrapper: {
-    padding: 10,
-  },
-  wishlistItemContent: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-  },
-  wishlistItemTitle: {
-    maxWidth: 100,
-  },
-  wishlistItemSeparator: {
-    backgroundColor: 'green', height: 1, marginTop: 10,
   },
   button: {
     marginTop: 10,

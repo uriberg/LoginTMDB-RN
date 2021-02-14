@@ -1,24 +1,9 @@
 import React from 'react';
-// import {connect} from 'react-redux';
-// import * as actions from '../store/actions/index';
 import axiosInstance from '../axios';
 import {Text, View, StyleSheet, Dimensions, FlatList, TouchableHighlight, Animated} from 'react-native';
-// import {NavigationScreenProps} from 'react-navigation';
-// @ts-ignore
 import {TMDB_API_KEY} from '@env';
 import { inject, observer } from "mobx-react";
 
-// interface PropsFromDispatch {
-//   onSetPopularMovies: () => void,
-//   onAddToWishlist: (title: string) => void
-// }
-//
-// interface PropsFromState {
-//   popularMovies: [],
-//   wishlist: []
-// }
-
-// type AllProps = NavigationScreenProps & PropsFromDispatch & PropsFromState;
 
 const Item = ({title}) => (
   <View style={styles.itemText}>
@@ -31,11 +16,6 @@ class MoviesContainer extends React.Component {
     constructor(props) {
         super(props);
 
-        const isPortrait = () => {
-            const dim = Dimensions.get('window');
-            return dim.height >= dim.width ? 'portrait' : 'landscape';
-        };
-
         this.state = {
             animation: new Animated.Value(0)
         };
@@ -44,7 +24,6 @@ class MoviesContainer extends React.Component {
     }
 
     componentDidMount() {
-        // console.log(TMDB_API_KEY);
         axiosInstance().get('/3/movie/popular?api_key=' + TMDB_API_KEY + '&language=en-US&page=1')
           .then(result => {
               this.props.store.setPopularMovies(result.data.results);
@@ -114,20 +93,6 @@ class MoviesContainer extends React.Component {
         );
     }
 }
-
-// const mapStateToProps = (state) => {
-//   return {
-//     popularMovies: state.movies.popularMovies,
-//     wishlist: state.movies.wishlist,
-//   };
-// };
-//
-// const mapDispatchToProps = (dispatch) => {
-//   return {
-//     onSetPopularMovies: (popularList) => dispatch(actions.setPopularMovies(popularList)),
-//     onAddToWishlist: (title) => dispatch(actions.addToWishlist(title)),
-//   };
-// };
 
 export default inject("store")(observer(MoviesContainer));
 
