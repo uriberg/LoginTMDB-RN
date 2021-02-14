@@ -2,7 +2,7 @@ import React from 'react';
 // import {connect} from 'react-redux';
 // import * as actions from '../store/actions/index';
 import axiosInstance from '../axios';
-import {Text, View, StyleSheet, Dimensions, FlatList, TouchableHighlight} from 'react-native';
+import {Text, View, StyleSheet, Dimensions, FlatList, TouchableHighlight, Animated} from 'react-native';
 // import {NavigationScreenProps} from 'react-navigation';
 // @ts-ignore
 import {TMDB_API_KEY} from '@env';
@@ -35,6 +35,12 @@ class MoviesContainer extends React.Component {
             const dim = Dimensions.get('window');
             return dim.height >= dim.width ? 'portrait' : 'landscape';
         };
+
+        this.state = {
+            animation: new Animated.Value(0)
+        };
+
+        this.animateOpacity();
     }
 
     componentDidMount() {
@@ -45,6 +51,14 @@ class MoviesContainer extends React.Component {
           })
           .catch(error => console.log(error));
     }
+
+    animateOpacity = () => {
+        Animated.timing(this.state.animation, {
+            toValue: 1,
+            duration: 800,
+            useNativeDriver: true
+        }).start();
+    };
 
     addToWishlist = (movieTitle) => {
       this.props.store.addToWishlist(movieTitle);
@@ -81,8 +95,12 @@ class MoviesContainer extends React.Component {
     );
 
     render() {
+        const animatedStyles = {
+            opacity: this.state.animation
+        };
+
         return (
-          <View style={styles.listContainer}>
+          <Animated.View style={[styles.listContainer, animatedStyles]}>
               <FlatList
                 data={this.props.store.popularMovies}
                 renderItem={this.renderItem}
@@ -92,7 +110,7 @@ class MoviesContainer extends React.Component {
                 contentContainerStyle={{
                     flexGrow: 1,
                 }}/>
-          </View>
+          </Animated.View>
         );
     }
 }

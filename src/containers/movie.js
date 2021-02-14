@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, Image, TouchableOpacity, StyleSheet, Modal, ScrollView } from "react-native";
+import { View, Text, Image, TouchableOpacity, StyleSheet, Modal, ScrollView, Animated} from "react-native";
 // import { NavigationScreenProps } from "react-navigation";
 import {observer, inject} from 'mobx-react'
 
@@ -7,6 +7,7 @@ import {observer, inject} from 'mobx-react'
 // import { connect } from "react-redux";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { LogBox } from "react-native";
+import WishlistItem from "../components/wishlistItem";
 
 LogBox.ignoreLogs([
   "Non-serializable values were found in the navigation state"
@@ -30,13 +31,69 @@ LogBox.ignoreLogs([
 // }
 
 // type AllProps = MovieProps & PropsFromDispatch & PropsFromState;
+const createAnimationStyle = animation => {
+  const translateY = animation.interpolate({
+    inputRange: [0, 1],
+    outputRange: [-5, 0],
+  });
+
+  return {
+    opacity: animation,
+    transform: [
+      {
+        translateY,
+      },
+    ],
+  };
+};
+
+const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
 class Movie extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = { showModal: false };
+    this.state = {
+      showModal: false,
+      animation: new Animated.Value(0),
+      headline: new Animated.Value(0),
+      poster: new Animated.Value(0),
+      description: new Animated.Value(0),
+      wishlistItem: new Animated.Value(1),
+      activeItem: -1
+    };
+
+    this.animateOpacity();
+    this.animateStagger();
   }
+
+  animateOpacity = () => {
+    Animated.timing(this.state.animation, {
+      toValue: 1,
+      duration: 800,
+      useNativeDriver: true
+    }).start();
+  };
+
+  animateStagger = () => {
+    Animated.stagger(300, [
+      Animated.timing(this.state.headline, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true
+      }),
+      Animated.timing(this.state.poster, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true
+      }),
+      Animated.timing(this.state.description, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: true
+      }),
+    ]).start();
+  };
 
   showModal = () => {
     this.setState({ showModal: true });
@@ -52,9 +109,21 @@ class Movie extends React.Component {
 
 
   render() {
+    const animatedStyles = {
+      opacity: this.state.animation
+    };
+
+    const animatedWishlistItemStyle = {
+      opacity: this.state.wishlistItem
+    };
+
+    const headlineStyle = createAnimationStyle(this.state.headline);
+    const posterImageStyle = createAnimationStyle(this.state.poster);
+    const descriptionStyle = createAnimationStyle(this.state.description);
+
     return (
       <View style={styles.movieContainer}>
-        <TouchableOpacity style={styles.favoriteButtonWrapper}>
+        <AnimatedTouchable style={[styles.favoriteButtonWrapper, animatedStyles]}>
           <Icon.Button
             name="heart"
             onPress={this.showModal}
@@ -63,31 +132,32 @@ class Movie extends React.Component {
             color="red">
             <Text style={styles.favoriteNumberText}>{this.props.store.wishlist.length}</Text>
           </Icon.Button>
-        </TouchableOpacity>
+        </AnimatedTouchable>
         <ScrollView>
           <View style={styles.movieDetails}>
-            <View style={styles.movieHeadline}>
+            <Animated.View style={[styles.movieHeadline, headlineStyle]}>
               <Text style={[styles.movieText, styles.movieTitle]}>{this.props.route.params.title}</Text>
               <Text style={styles.movieText}>{this.props.route.params.rating}</Text>
-            </View>
+            </Animated.View>
 
-            <View>
+            <Animated.View style={posterImageStyle}>
               <Image style={styles.moviePoster}
                      source={{ uri: "https://image.tmdb.org/t/p/original" + this.props.route.params.poster_path }} />
-            </View>
-            <View style={styles.movieDescription}>
+            </Animated.View>
+            <Animated.View style={[styles.movieDescription, descriptionStyle]}>
               <Text style={styles.movieText}>{this.props.route.params.overview}</Text>
-            </View>
+            </Animated.View>
           </View>
         </ScrollView>
 
 
-        <TouchableOpacity
-          onPress={() => this.props.store.addToWishlist(this.props.route.params.title, this.props.route.params.id)} style={styles.centerButton}>
+        <AnimatedTouchable
+          onPress={() => this.props.store.addToWishlist(this.props.route.params.title, this.props.route.params.id)}
+          style={[styles.centerButton, animatedStyles]}>
           <View style={styles.button}>
             <Text style={styles.buttonText}>Add to wishlist</Text>
           </View>
-        </TouchableOpacity>
+        </AnimatedTouchable>
         <Modal transparent={true} visible={this.state.showModal}>
           <View style={styles.outsideModalWrapper}>
             <View style={styles.insideModalWrapper}>
@@ -97,16 +167,9 @@ class Movie extends React.Component {
               </Icon.Button>
               <View>
                 {this.props.store.wishlist.map((item) =>
-                  <View key={item.id} style={styles.wishlistItemWrapper}>
-                    <View style={styles.wishlistItemContent}
-                          key={item.id}>
-                      <Text style={styles.wishlistItemTitle}>{item.movieTitle}</Text>
-                      <Icon.Button name="remove" onPress={() => this.deleteItemFromWishlist(item.id)}>
-                        remove from wishlist
-                      </Icon.Button>
-                    </View>
-                    <View style={styles.wishlistItemSeparator} />
-                  </View>
+                    <WishlistItem id={item.id} key={item.id}
+                    deleteItemFromWishlist={this.deleteItemFromWishlist}
+                    movieTitle={item.movieTitle}/>
                 )}
               </View>
             </View>

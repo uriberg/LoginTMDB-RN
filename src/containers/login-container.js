@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, StyleSheet, Dimensions, ScrollView, Image, TouchableOpacity } from 'react-native';
+import {Text, View, StyleSheet, Dimensions, ScrollView, Image, TouchableOpacity, Animated} from 'react-native';
 import FacebookLogin from '../components/fb-login';
 import GoogleLogin from '../components/google-login';
 import auth from '@react-native-firebase/auth';
@@ -20,7 +20,27 @@ import {
 
 // type AllProps = NavigationScreenProps;
 
+const createAnimationStyle = animation => {
+    const translateY = animation.interpolate({
+        inputRange: [0, 1],
+        outputRange: [-5, 0],
+    });
+
+    return {
+        opacity: animation,
+        transform: [
+            {
+                translateY,
+            },
+        ],
+    };
+};
+
+const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
+const AnimatedImage = Animated.createAnimatedComponent(Image);
+
 let subscriber;
+
 class LoginContainer extends React.Component {
 
     constructor(props) {
@@ -37,7 +57,17 @@ class LoginContainer extends React.Component {
             initializing: true,
             pictureURL: null,
             pictureURLByID: null,
+            animation: new Animated.Value(0),
+            logout: new Animated.Value(0),
+            welcome: new Animated.Value(0),
+            profileImage: new Animated.Value(0),
+            loginToContinue: new Animated.Value(0),
+            welcomeUser: new Animated.Value(0),
+            socialProfileImage: new Animated.Value(0),
+            goToMovies: new Animated.Value(0)
         };
+
+        this.animateOpacity();
 
         Dimensions.addEventListener('change', () => {
             console.log('orientation move');
@@ -52,11 +82,87 @@ class LoginContainer extends React.Component {
         // unsubscribe on unmount
     }
 
-    componentWillUnmount = () => {
-        subscriber();
+    componentDidMount() {
+       this.animateStagger();
     }
 
+
+    componentWillUnmount = () => {
+        subscriber();
+    };
+
+    animateStagger = () => {
+        Animated.stagger(200, [
+            Animated.timing(this.state.welcome, {
+                toValue: 1,
+                duration: 200,
+                useNativeDriver: true
+            }),
+            Animated.timing(this.state.profileImage, {
+                toValue: 1,
+                duration: 200,
+                useNativeDriver: true
+            }),
+            Animated.timing(this.state.loginToContinue, {
+                toValue: 1,
+                duration: 200,
+                useNativeDriver: true
+            }),
+        ]).start();
+    };
+
+    animateLoggedIn = () => {
+        Animated.stagger(200, [
+            Animated.timing(this.state.welcomeUser, {
+                toValue: 1,
+                duration: 200,
+                useNativeDriver: true
+            }),
+            Animated.timing(this.state.socialProfileImage, {
+                toValue: 1,
+                duration: 200,
+                useNativeDriver: true
+            }),
+            Animated.timing(this.state.goToMovies, {
+                toValue: 1,
+                duration: 200,
+                useNativeDriver: true
+            }),
+        ]).start();
+    }
+
+    animateOpacity = () => {
+        Animated.timing(this.state.animation, {
+            toValue: 1,
+            duration: 800,
+            useNativeDriver: true
+        }).start();
+    };
+
+    animateLogout = () => {
+        Animated.timing(this.state.logout, {
+            toValue: 1,
+            duration: 800,
+            useNativeDriver: true
+        }).start();
+    };
+
     onAuthStateChanged = (user) => {
+        if (user) {
+            this.state.animation.setValue(0);
+            this.state.welcome.setValue(0);
+            this.state.profileImage.setValue(0);
+            this.state.loginToContinue.setValue(0);
+            this.animateLogout();
+            this.animateLoggedIn();
+        } else {
+            this.state.logout.setValue(0),
+            this.state.welcomeUser.setValue(0),
+            this.state.socialProfileImage.setValue(0),
+            this.state.goToMovies.setValue(0),
+            this.animateOpacity();
+            this.animateStagger();
+        }
         this.setState({user: user});
         if (this.state.initializing) this.setState({initializing: false});
     };
@@ -64,10 +170,10 @@ class LoginContainer extends React.Component {
     logout = () => {
         try {
             auth()
-              .signOut()
-              .then(() => {
-                  this.setState({user: null});
-              });
+                .signOut()
+                .then(() => {
+                    this.setState({user: null});
+                });
         } catch (error) {
             console.error(error);
         }
@@ -93,44 +199,68 @@ class LoginContainer extends React.Component {
     };
 
     render() {
+        const welcomeStyle = createAnimationStyle(this.state.welcome);
+        const welcomeUserStyle = createAnimationStyle(this.state.welcomeUser);
+        const profileImageStyle = createAnimationStyle(this.state.profileImage);
+        const socialProfileImageStyle = createAnimationStyle(this.state.socialProfileImage);
+        const loginToContinueStyle = createAnimationStyle(this.state.loginToContinue);
+        const goToMoviesStyle = createAnimationStyle(this.state.goToMovies);
+
+
+        const animatedStyles = {
+            opacity: this.state.animation
+        };
+
+        const animatedLogout = {
+            opacity: this.state.logout
+        };
+
         const containerBody = this.state.initializing ? null
             :
             <View style={styles.loginContainerPortrait}>
                 <View style={styles.loginWelcome}>
                     {this.state.user ?
-                        <Text style={styles.loginWelcomeText}>Welcome {this.state.user.displayName}!</Text>
+                        <Animated.View style={welcomeUserStyle}>
+                            <Text style={styles.loginWelcomeText}>Welcome {this.state.user.displayName}!</Text>
+                        </Animated.View>
                         :
-                        <Text style={styles.loginWelcomeText}>Welcome Stranger!</Text>
+                        <Animated.View style={welcomeStyle}>
+                            <Text style={styles.loginWelcomeText}>Welcome Stranger!</Text>
+                        </Animated.View>
                     }
                     {!this.state.user ?
-                        <Image source={emptyProfile} style={styles.emptyAvatar}/>
+                        <Animated.View style={profileImageStyle}>
+                            <Image source={emptyProfile} style={styles.emptyAvatar}/>
+                        </Animated.View>
                         :
-                        <Image source={{uri: this.state.user.photoURL}}
-                               style={styles.profileAvatar}/>
+                        <AnimatedImage source={{uri: this.state.user.photoURL}}
+                               style={[styles.profileAvatar, socialProfileImageStyle]}/>
                     }
                     {this.state.user ?
-                        <TouchableOpacity style={styles.loginGoToMoviesButton} onPress={() => this.props.navigation.navigate('Movies')}>
+                        <AnimatedTouchable style={[styles.loginGoToMoviesButton, goToMoviesStyle]}
+                                          onPress={() => this.props.navigation.navigate('Movies')}>
                             <Text style={styles.loginGoToMoviesButtonText}>GO TO MOVIES</Text>
-                        </TouchableOpacity>
+                        </AnimatedTouchable>
                         :
-                        <Text style={styles.loginWelcomeSubHeading}>Please log in to continue to the
-                            awesomness</Text>
+                        <Animated.View style={loginToContinueStyle}>
+                            <Text style={styles.loginWelcomeSubHeading}>Please  log in to continue to the
+                                awesomness</Text>
+                        </Animated.View>
                     }
                 </View>
 
                 {!this.state.user ?
-                  <View style={[styles.socialLoginWrapper]}>
-                      <View style={styles.socialButtonWrapper}>
-                              <FacebookLogin user={this.state.user} showProfileImage={this.onFacebookLoginImage} />
-                              <GoogleLogin user={this.state.user} />
-                      </View>
+                    <Animated.View style={[styles.socialLoginWrapper, animatedStyles]}>
+                        <View style={styles.socialButtonWrapper}>
+                            <FacebookLogin user={this.state.user} showProfileImage={this.onFacebookLoginImage}/>
+                            <GoogleLogin user={this.state.user}/>
+                        </View>
 
-                  </View> :
+                    </Animated.View> :
 
-
-                  <TouchableOpacity onPress={this.logout} style={styles.logoutButton}>
-                      <Text style={styles.logoutButtonText}>Logout</Text>
-                  </TouchableOpacity>
+                    <AnimatedTouchable onPress={this.logout} style={[styles.logoutButton, animatedLogout]}>
+                        <Text style={styles.logoutButtonText}>Logout</Text>
+                    </AnimatedTouchable>
 
                 }
             </View>;
